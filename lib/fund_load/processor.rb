@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'bigdecimal'
 require 'date'
 require 'time'
 
@@ -50,7 +49,10 @@ module FundLoad
 
     # Assumption: week boundaries follow ISO-8601 weeks (Monday start).
     def parse_amount_cents(amount)
-      (BigDecimal(amount.delete('$')) * 100).to_i
+      normalized = amount.delete('$')
+      dollars, cents = normalized.split('.', 2)
+      cents = cents.to_s.ljust(2, '0')[0, 2]
+      (dollars.to_i * 100) + cents.to_i
     end
   end
 end
