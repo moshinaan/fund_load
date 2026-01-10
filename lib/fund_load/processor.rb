@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'date'
 require 'time'
 
 module FundLoad
@@ -15,17 +14,16 @@ module FundLoad
       @daily_attempts = Hash.new { |hash, key| hash[key] = Hash.new(0) }
     end
 
-    def adjudicate(load)
-      customer_id = load.fetch('customer_id')
-      time = Time.parse(load.fetch('time')).utc
+    def adjudicate(data)
+      customer_id = data.fetch('customer_id')
+      time = Time.parse(data.fetch('time')).utc
       day_key = time.to_date.iso8601
       week_key = [time.to_date.cwyear, time.to_date.cweek]
 
-      # Assumption: daily attempt limits count every load attempt, even if declined.
       attempts_today = @daily_attempts[customer_id][day_key]
       over_attempt_limit = attempts_today >= DAILY_ATTEMPT_LIMIT
 
-      amount_cents = parse_amount_cents(load.fetch('load_amount'))
+      amount_cents = parse_amount_cents(data.fetch('load_amount'))
 
       # Assumption: daily/weekly amount limits track only accepted loads.
       daily_total = @daily_amounts[customer_id][day_key]
