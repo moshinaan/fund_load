@@ -45,14 +45,18 @@ RSpec.describe FundLoad::Processor do
 
   it 'declines loads that exceed the weekly amount limit' do
     loads = [
-      build_load(id: '1', customer_id: 'A', amount: '$10000.00', time: '2023-01-02T00:00:00Z'),
-      build_load(id: '2', customer_id: 'A', amount: '$10000.00', time: '2023-01-03T00:00:00Z'),
-      build_load(id: '3', customer_id: 'A', amount: '$0.01', time: '2023-01-04T00:00:00Z')
+      build_load(id: '1', customer_id: 'A', amount: '$5000.00', time: '2023-01-02T00:00:00Z'),
+      build_load(id: '2', customer_id: 'A', amount: '$5000.00', time: '2023-01-03T00:00:00Z'),
+      build_load(id: '2', customer_id: 'A', amount: '$5000.00', time: '2023-01-04T00:00:00Z'),
+      build_load(id: '2', customer_id: 'A', amount: '$5000.00', time: '2023-01-05T00:00:00Z'),
+      build_load(id: '3', customer_id: 'A', amount: '$0.01', time: '2023-01-06T00:00:00Z')
     ]
 
     expect(processor.adjudicate(loads[0])).to be(true)
     expect(processor.adjudicate(loads[1])).to be(true)
-    expect(processor.adjudicate(loads[2])).to be(false)
+    expect(processor.adjudicate(loads[2])).to be(true)
+    expect(processor.adjudicate(loads[3])).to be(true)
+    expect(processor.adjudicate(loads[4])).to be(false)
   end
 
   it 'declines the fourth attempt in a single day' do
