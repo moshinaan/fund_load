@@ -1,0 +1,21 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require 'json'
+require_relative '../lib/fund_load/processor'
+
+processor = FundLoad::Processor.new
+
+ARGF.each_line do |line|
+  next if line.strip.empty?
+
+  load = JSON.parse(line)
+  accepted = processor.adjudicate(load)
+  output = {
+    id: load.fetch('id'),
+    customer_id: load.fetch('customer_id'),
+    accepted: accepted
+  }
+
+  puts(JSON.generate(output))
+end
