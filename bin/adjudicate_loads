@@ -13,11 +13,11 @@ ARGF.each_line do |line|
   data = JSON.parse(line)
   status = processor.adjudicate(data)
 
-  output = {
+  result = {
     id: data.fetch('id'),
     customer_id: data.fetch('customer_id'),
     accepted: status
   }
 
-  puts(JSON.generate(output))
+  puts(JSON.generate(result))
 end
