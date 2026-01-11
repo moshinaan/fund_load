@@ -28,11 +28,7 @@ module FundLoad
         limit_over_weekly_amount(customer_id, week_key, amount_cents)
       )
 
-      @daily_attempts[customer_id][day_key] += 1
-      if accepted
-        @daily_amounts[customer_id][day_key] += amount_cents
-        @weekly_amounts[customer_id][week_key] += amount_cents
-      end
+      increase_limit(accepted, amount_cents, customer_id, day_key, week_key)
 
       accepted
     end
@@ -60,6 +56,14 @@ module FundLoad
     def limit_over_weekly_amount(customer_id, week_key, amount_cents)
       weekly_total = @weekly_amounts[customer_id][week_key]
       (weekly_total + amount_cents) > WEEKLY_AMOUNT_LIMIT_CENTS
+    end
+
+    def increase_limit(accepted, amount_cents, customer_id, day_key, week_key)
+      @daily_attempts[customer_id][day_key] += 1
+      if accepted
+        @daily_amounts[customer_id][day_key] += amount_cents
+        @weekly_amounts[customer_id][week_key] += amount_cents
+      end
     end
   end
 end
